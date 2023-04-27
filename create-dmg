@@ -98,6 +98,8 @@ Options:
       make a drop link to user QuickLook install dir, at location x,y
   --eula <eula_file>
       attach a license file to the dmg (plain text or RTF)
+  --rsrc-template <resource_xml>
+      use an alternate resource template for license agreement (xml)
   --no-internet-enable
       disable automatic mount & copy
   --format <format>
@@ -183,6 +185,9 @@ while [[ "${1:0:1}" = "-" ]]; do
 			shift; shift; shift;;
 		--eula)
 			EULA_RSRC=$2
+			shift; shift;;
+		--rsrc-template)
+			RSRC_TEMPLATE=$2
 			shift; shift;;
 		--no-internet-enable)
 			NOINTERNET=1
@@ -493,6 +498,13 @@ echo "Compressing disk image..."
 hdiutil convert ${HDIUTIL_VERBOSITY} "${DMG_TEMP_NAME}" -format ${FORMAT} ${IMAGEKEY} -o "${DMG_DIR}/${DMG_NAME}"
 rm -f "${DMG_TEMP_NAME}"
 
+# Set EULA template
+if [[ -n "${RSRC_TEMPLATE}" && "${RSRC_TEMPLATE}" != "-null-" ]]; then
+	RSRC_TEMPLATE_FILE="${RSRC_TEMPLATE}"
+else
+	RSRC_TEMPLATE_FILE="${CDMG_SUPPORT_DIR}/eula-resources-template.xml"
+fi
+
 # Adding EULA resources
 if [[ -n "${EULA_RSRC}" && "${EULA_RSRC}" != "-null-" ]]; then
 	echo "Adding EULA resources..."
@@ -516,7 +528,7 @@ if [[ -n "${EULA_RSRC}" && "${EULA_RSRC}" != "-null-" ]]; then
 	EULA_DATA="$(openssl base64 -in "${EULA_RSRC}" | tr -d '\n' | awk '{gsub(/.{52}/,"&\n")}1' | sed s$'/^\(.*\)$/\t\t\t\\1/')"
 	# Fill the template with the custom EULA contents
 	eval "cat > \"${EULA_RESOURCES_FILE}\" <<EOF                                                                                                                  
-	$(<${CDMG_SUPPORT_DIR}/eula-resources-template.xml)
+	$(<${RSRC_TEMPLATE_FILE})
 	EOF
 	"
 	# Apply the resources
