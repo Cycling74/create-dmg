@@ -61,6 +61,7 @@ All contents of source\_folder will be copied into the disk image.
 - **--app-drop-link \<x\> \<y\>:** make a drop link to Applications, at location x, y
 - **--ql-drop-link \<x\> \<y\>:** make a drop link to /Library/QuickLook, at location x, y
 - **--eula \<eula_file\>:** attach a license file to the dmg
+- **--rsrc-template \<resource_xml\>:** use an alternate resource template for license agreement (xml); allows for localization
 - **--rez \<rez_path\>:** specify custom path to Rez tool used to include license file
 - **--no-internet-enable:** disable automatic mount&copy
 - **--format:** specify the final image format (UDZO|UDBZ|ULFO|ULMO) (default is UDZO)
